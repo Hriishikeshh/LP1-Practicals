@@ -1,0 +1,4 @@
+beladys's anomaly:
+-page faults occur when page is not found in physical memory Ram and instead stored in swap memory.
+-this occurs when all page frames are allocated with process and new process enters trying to find space.
+-occurs only in case of FIFO not in optimal page replacement and LRU 
