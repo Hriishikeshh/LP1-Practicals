@@ -30,6 +30,11 @@ class pageReplacement{
         cout<<"Page Faults: "<<pageFaults<<endl;
     }
 
+    // Optimal page replacement algorithm
+    void optimal(vector<int>v,int n){
+        
+    }
+
     // LRU page replacement algorithm
 };
 
@@ -39,5 +44,10 @@ int main(){
     vector<int> pages = {1,3,0,3,5,6,3};
     int pageFrames=3;
     pageReplacement pr;
+
+    // FIFO
     pr.FIFO(pages,pageFrames);
+
+    // optimal
+
 }
