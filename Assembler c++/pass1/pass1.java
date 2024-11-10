@@ -1,5 +1,3 @@
-package pass1;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
@@ -7,9 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Pass1 {
+public class pass1 {
     public static void main(String[] args) throws Exception {
-        FileReader fp = new FileReader("D:\\java\\AssemblerLP1\\src\\pass1\\input.txt");
+        FileReader fp = new FileReader("D:\\LP1-Practicals\\Assembler c++\\pass1\\input.txt");
         BufferedReader bufferReader = new BufferedReader(fp);
 
         int MAX = 101;
