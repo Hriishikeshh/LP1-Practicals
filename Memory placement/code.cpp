@@ -1,175 +1,124 @@
-#include <iostream>
-#include <vector>
-#include <string>
-#include <utility>
+#include<iostream>
+#include<vector>
+#include<climits>
 
 using namespace std;
 
-class MemoryPlacement
-{
-public:
-    // first fit
-    void firstfit(int n, int m, vector<pair<string, int>> &process, vector<int> &memory)
-    {
-        vector<string> allocation(memory.size(), "");
+class placement{
+    public:
+        vector<pair<int,bool>> memoryblocks;
 
-        for (int i = 0; i < n; i++)
-        {
-            bool allocated = false;
-            for (int j = 0; j < m; j++)
-            {
-                if (memory[j] >= process[i].second)
-                {
-                    allocation[j] += process[i].first + " ";
-                    memory[j] -= process[i].second;
-                    allocated = true;
+        placement(vector<int> v){
+            for(auto size:v){
+                memoryblocks.push_back({size,false});
+            }
+        }
+
+        void printmemory(){
+            cout<<"Memory blocks: "<<endl;
+            for(auto& it:memoryblocks){
+                cout<<"[size: "<<it.first<<","<<(it.second ? "allocated ":"free")<<"]";
+            }
+            cout<<endl;
+            cout<<endl;
+        }
+
+        void firstfit(int process_size){
+            bool allocate=false;
+            for(auto& it:memoryblocks){
+                if(!it.second && it.first>=process_size){
+                    it.second=true;
+                    allocate=true;
+                    cout<<"allocated "<<process_size<<" memory block :"<<it.first<<endl;
                     break;
                 }
             }
-            if (!allocated)
-            {
-                cout << "Process " << process[i].first << " with size " << process[i].second << " could not be allocated.\n";
+            if(!allocate){
+                cout<<"failed to allocate memory to "<<process_size<<endl;
             }
+            printmemory();
+
         }
 
-        cout << "First Fit allocation :\n";
-        for (int i = 0; i < memory.size(); ++i)
-        {
-            cout << "Memory Block " << i + 1 << " (" << memory[i] << "MB free): " << allocation[i] << endl;
-        }
-    }
-
-    // Best-Fit Algorithm
-    void bestfit(int n, int m, vector<pair<string, int>> &process, vector<int> &memory)
-    {
-        vector<string> allocation(memory.size(), "");
-
-        for (int i = 0; i < n; i++)
-        {
-            int bestIdx = -1;
-            for (int j = 0; j < m; j++)
-            {
-                if (memory[j] >= process[i].second)
-                {
-                    if (bestIdx == -1 || memory[j] < memory[bestIdx])
-                    {
-                        bestIdx = j;
-                    }
+        void bestfit(int size){
+            int min_block=INT_MAX;
+            int idx=-1;
+            for(int i=0;i<memoryblocks.size();i++){
+                if(!memoryblocks[i].second && memoryblocks[i].first>=size && memoryblocks[i].first<min_block){
+                    min_block=memoryblocks[i].first;
+                    idx=i;
                 }
             }
-            if (bestIdx != -1)
-            {
-                allocation[bestIdx] += process[i].first + " ";
-                memory[bestIdx] -= process[i].second;
+
+            if(idx!=-1){
+                memoryblocks[idx].second=true;
+                cout<<"Memory allocated to process size "<<size<<" at block "<<memoryblocks[idx].first<<endl;
+            }else{
+                cout<<"failed to allocate space to process "<<size<<endl;
             }
-            else
-            {
-                cout << "Process " << process[i].first << " with size " << process[i].second << " could not be allocated.\n";
-            }
+
+            printmemory();
         }
 
-        cout << "Memory Allocation:\n";
-        for (int i = 0; i < memory.size(); ++i)
-        {
-            cout << "Memory Block " << i + 1 << " (" << memory[i] << "MB free): " << allocation[i] << endl;
+        void worstfit(int size){
+
         }
-    }
 
-    void worstfit(int n, int m, vector<pair<string, int>> &process, vector<int> &memory)
-    {
-        vector<string> allocation(m, " ");
-        int maxi = memory[0];
+        void nextfit(int& size,int& lastidx){
+            bool allocate=false;
+            for(int i=0;i<memoryblocks.size();i++){
 
-        for (int i = 0; i < m; i++)
-        {
-            int worstidx = -1;
-            int maxSize = -1;
+                int index=(i+lastidx)%memoryblocks.size();
 
-            for (int j = 0; j < m; j++)
-            {
-                if (memory[j] >= process[i].second && memory[j] > maxSize)
-                {
-                    maxSize = memory[j];
-                    worstidx = j;
+                if(!memoryblocks[index].second && memoryblocks[index].first >= size){
+                    allocate=true;
+                    memoryblocks[index].second=true;
+                    lastidx=index;
+                    cout<<"allocated [size :"<<size<<", memory: "<<memoryblocks[index].first<<" ]";
+                    break;
                 }
             }
-            cout << memory[worstidx] << "  " << endl;
-
-            if (memory[worstidx] >= process[i].second)
-            {
-                memory[worstidx] -= process[i].second;
-                allocation[worstidx] += process[i].first + " ";
-                cout << "Process" << process[i].first << "with size " << process[i].second << "allocated" << endl;
+            
+            if(!allocate){
+                cout<<"failed to assign space to "<<size<<" any block";
             }
-            else
-            {
-                cout << "Process " << process[i].first << " with size " << process[i].second << " could not be allocated.\n";
-            }
+            cout<<endl;
+            printmemory();
         }
-        cout << "Memory Allocation:\n";
-        for (int i = 0; i < memory.size(); ++i)
-        {
-            cout << "Memory Block " << i + 1 << " (" << memory[i] << "MB free): " << allocation[i] << endl;
-        }
-    }
 
-    void worstfit(int n, int m, vector<pair<string, int>> &process, vector<int> &memory)
-    {
-        vector<string> allocation(m, " ");
-        int maxi = memory[0];
-
-        for (int i = 0; i < m; i++)
-        {
-            int worstidx = -1;
-            int maxSize = -1;
-
-            for (int j = 0; j < m; j++)
-            {
-                if (memory[j] >= process[i].second && memory[j] > maxSize)
-                {
-                    maxSize = memory[j];
-                    worstidx = j;
-                }
+        void reset(){
+            for(auto& it:memoryblocks){
+                it.second=false;
             }
-            cout << memory[worstidx] << "  " << endl;
+            cout<<"memory reset done"<<endl;
+            printmemory();
+        }
 
-            if (memory[worstidx] >= process[i].second)
-            {
-                memory[worstidx] -= process[i].second;
-                allocation[worstidx] += process[i].first + " ";
-                cout << "Process" << process[i].first << "with size " << process[i].second << "allocated" << endl;
-            }
-            else
-            {
-                cout << "Process " << process[i].first << " with size " << process[i].second << " could not be allocated.\n";
-            }
-        }
-        cout << "Memory Allocation:\n";
-        for (int i = 0; i < memory.size(); ++i)
-        {
-            cout << "Memory Block " << i + 1 << " (" << memory[i] << "MB free): " << allocation[i] << endl;
-        }
-    }
 };
 
-int main()
-{
-    vector<int> memory = {100, 500, 200, 300, 600};
-    vector<pair<string, int>> process = {{"p1", 120}, {"p2", 200}, {"p3", 50}, {"p4", 80}, {"p5", 300}};
+int main(){
 
-    int m = process.size();
-    int n = memory.size();
+    vector<int> memoryblocks={100,200,300,400};
+    placement p1(memoryblocks);
 
-    MemoryPlacement mp;
+    vector<int> v = {212, 417, 112, 426};
+    
+    // for(auto it:v){
+    //     p1.firstfit(it);
+    // }
+    // p1.reset(); 
 
-    // First-Fit algorithm
-    // mp.firstfit(n, m, process, memory);
+    // for(auto it:v){
+    //     p1.bestfit(it);
+    // }
+    // p1.reset();
 
-    // Best-Fit Algorithm
-    // mp.bestfit(n, m, process, memory);
+    cout << "Next Fit Allocation:" << endl;
+    int lastidx = 0;
+    for (auto it : v) {
+        p1.nextfit(it, lastidx);
+    }
+    p1.reset();
 
-    // worst fit
-    mp.worstfit(n, m, process, memory);
 
-    return 0;
 }
