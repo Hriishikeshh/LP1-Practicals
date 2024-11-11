@@ -1,2 +1,0 @@
-INCR 1
-DECR 6

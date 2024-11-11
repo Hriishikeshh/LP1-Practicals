@@ -1,0 +1,1 @@
+ mdt_line.append(f"(P,{pntab[Macroname].index(part)+1})")
