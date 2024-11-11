@@ -17,7 +17,7 @@ class placement{
         void printmemory(){
             cout<<"Memory blocks: "<<endl;
             for(auto& it:memoryblocks){
-                cout<<"[size: "<<it.first<<","<<(it.second ? "allocated ":"free")<<"]";
+                cout<<"[size: "<<it.first<<","<<(it.second ? "allocated":"free")<<"]";
             }
             cout<<endl;
             cout<<endl;
@@ -60,8 +60,23 @@ class placement{
             printmemory();
         }
 
-        void worstfit(int size){
-
+        void worstfit(int process_size){
+            bool allocated=false;
+            int max_size=INT_MIN;
+            int idx=-1;
+            for(int i=0;i<memoryblocks.size();i++){
+                if(!memoryblocks[i].second && process_size<=memoryblocks[i].first && memoryblocks[i].first>max_size){
+                    idx=i;
+                }
+            }
+            if(idx!=-1){
+                allocated=true;
+                memoryblocks[idx].second=true;
+                cout<<" [size : "<<process_size<<" assigned to memory block : "<<memoryblocks[idx].first<<"] "<<endl;
+            }else{
+                 cout<<"size : "<<process_size<<" not assigned to any memory block : "<<endl;
+            }
+            printmemory();
         }
 
         void nextfit(int& size,int& lastidx){
@@ -101,7 +116,7 @@ int main(){
     vector<int> memoryblocks={100,200,300,400};
     placement p1(memoryblocks);
 
-    vector<int> v = {212, 417, 112, 426};
+    vector<int> v = {212, 417, 112, 426,50};
     
     // for(auto it:v){
     //     p1.firstfit(it);
@@ -113,10 +128,16 @@ int main(){
     // }
     // p1.reset();
 
-    cout << "Next Fit Allocation:" << endl;
-    int lastidx = 0;
+    // cout << "Next Fit Allocation:" << endl;
+    // int lastidx = 0;
+    // for (auto it : v) {
+    //     p1.nextfit(it, lastidx);
+    // }
+    // p1.reset();
+
+    cout << "Worst Fit Allocation:" << endl;
     for (auto it : v) {
-        p1.nextfit(it, lastidx);
+        p1.worstfit(it);
     }
     p1.reset();
 
